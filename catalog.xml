@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/web/WEB-INF/schema/admin.xsd" uri="src/conf/xml-resources/jaxb/admins/admin.xsd"/>
+    <system systemId="file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/web/WEB-INF/schema/admins.xsd" uri="src/conf/xml-resources/jaxb/admins/admins.xsd"/>
+    <system systemId="file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/web/WEB-INF/schema/domains.xsd" uri="src/conf/xml-resources/jaxb/domains/domains.xsd"/>
+    <system systemId="file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/web/WEB-INF/schema/pages.xsd" uri="src/conf/xml-resources/jaxb/domains/pages.xsd"/>
+</catalog>

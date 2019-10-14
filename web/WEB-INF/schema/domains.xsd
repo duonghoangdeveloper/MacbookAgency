@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    version="1.0"
+    targetNamespace="domainSchema"
+    xmlns="domainSchema"
+    xmlns:p="pageSchema"
+    elementFormDefault="qualified">
+    
+    <xs:import namespace="pageSchema" schemaLocation="pages.xsd"/>
+    
+    <xs:element name="domainList" type="DomainListDTO" />
+    
+    <xs:complexType name="DomainListDTO">
+        <xs:sequence>
+            <xs:element name="domain" type="DomainDTO" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="DomainDTO">
+        <xs:sequence>
+            <xs:element name="domain" type="domain"/>
+            <xs:element name="name" type="name"/>
+            <xs:element name="pageList" type="p:PageListDTO"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="domain">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="50"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="name">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="50"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+</xs:schema>

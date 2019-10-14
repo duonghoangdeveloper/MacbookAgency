@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    version="1.0"
+    targetNamespace="adminSchema"
+    xmlns="adminSchema"
+    elementFormDefault="qualified">
+    
+    <xs:element name="adminList" type="AdminListDTO" />
+    
+    <xs:complexType name="AdminListDTO">
+        <xs:sequence>
+            <xs:element name="admin" type="AdminDTO" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="AdminDTO">
+        <xs:sequence>
+            <xs:element name="username" type="username"/>
+            <xs:element name="password" type="password"  nillable="true"/>
+            <xs:element name="fullname" type="fullname"/>
+            <xs:element name="email" type="email"/>
+            <xs:element name="phone" type="phone"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="username">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="^[A-Za-z0-9]{5,50}$"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="password">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="^.{5,50}$"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="fullname">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="^.{5,50}$"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="email">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="^[A-Za-z0-9._]{1,50}@[A-Za-z0-9._]{1,49}$"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="phone">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="^[0-9]{10,11}$"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+</xs:schema>

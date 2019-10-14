@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/src/java/dto/DomainDTO.java</file>
+            <file>file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/src/java/validator/DomainValidator.java</file>
+            <file>file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/src/java/dto/DomainErrorDTO.java</file>
+            <file>file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/build/web/domains.jsp</file>
+            <file>file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/src/java/servlet/CrawlServlet.java</file>
+            <file>file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/src/java/dao/DomainDAO.java</file>
+            <file>file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/src/java/servlet/domain/CreateDomainServlet.java</file>
+            <file>file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/src/java/dto/DomainListDTO.java</file>
+            <file>file:/C:/Users/Duong/Desktop/XML/demo/MacbookAgency/web/domains.jsp</file>
+        </group>
+    </open-files>
+</project-private>
