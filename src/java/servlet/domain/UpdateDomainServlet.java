@@ -52,12 +52,13 @@ public class UpdateDomainServlet extends HttpServlet {
             if (admin != null) {
                 String txtDomain = request.getParameter("txtDomain");
                 String txtName = request.getParameter("txtName");
+                String txtXslPath = request.getParameter("txtXslPath");
                 
-                DomainErrorDTO error = DomainValidator.validateUpdateDomain(txtDomain, txtName);
+                DomainErrorDTO error = DomainValidator.validateUpdateDomain(txtDomain, txtName, txtXslPath);
 
                 if (error == null) {
                     DomainDAO dao = new DomainDAO();
-                    boolean success = dao.updateDomain(txtDomain, txtName);
+                    boolean success = dao.updateDomain(txtDomain, txtName, txtXslPath);
                     if (success) {
                         url = SUCCESS;
                     } else {

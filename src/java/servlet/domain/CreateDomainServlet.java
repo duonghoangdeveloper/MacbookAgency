@@ -61,14 +61,14 @@ public class CreateDomainServlet extends HttpServlet {
                     
                     if (!dao.exists(txtDomain)) {
                         dao = new DomainDAO();
-                        boolean success = dao.createDomain(txtDomain, txtName);
+                        boolean success = dao.createDomain(txtDomain, txtName, txtXslPath);
                         if (success) {
                             url = SUCCESS;
                         } else {
                             request.setAttribute("ERROR_MESSAGE", "Create domain failed");
                         }
                     } else {
-                        error = new DomainErrorDTO("Domain exists", null);
+                        error = new DomainErrorDTO("Domain exists", null, null);
                         request.setAttribute("DOMAIN_ERROR_DTO", error);
                         url = INVALID;
                     }
