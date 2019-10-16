@@ -56,7 +56,7 @@ public class GetMacbookModelListServlet extends HttpServlet {
 
             if (admin != null) {
                 MacbookModelDAO dao = new MacbookModelDAO();
-                MacbookModelListDTO macbookModelList = dao.getMacbookModelList();
+                MacbookModelListDTO macbookModelList = dao.getMacbookModelList(true, false);
 
                 if (macbookModelList != null && macbookModelList.getMacbookModel() != null) {
                     JAXBContext jc = JAXBContext.newInstance(macbookModelList.getClass());

@@ -10,28 +10,29 @@ import dao.AccessoryDAO;
 import dao.MacbookDAO;
 import dao.MacbookModelDAO;
 import dto.AccessoryCategoryListDTO;
+import dto.AccessoryDTO;
 import dto.AccessoryErrorDTO;
+import dto.AccessoryListDTO;
+import dto.CrawlPageDTO;
+import dto.MacbookDTO;
 import dto.MacbookErrorDTO;
+import dto.MacbookListDTO;
 import dto.MacbookModelListDTO;
 import dto.PageDTO;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.LinkedList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -116,7 +117,7 @@ public class Crawler {
         Document configDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         Element root = configDocument.createElement("products");
         configDocument.appendChild(root);
-        root.setAttribute("xmlns", "https://www.macstores.vn");
+        root.setAttribute("xmlns", page.getDomain());
         root.setAttribute("link", page.getDomain() + page.getPath());
         root.setAttribute("host", page.getDomain());
 
@@ -150,10 +151,7 @@ public class Crawler {
         return stream;
     }
 
-    static public void saveToDB(InputStream xmlStream) throws XMLStreamException, TransformerException, SQLException, ClassNotFoundException {
-
-        XMLInputFactory factory = XMLInputFactory.newFactory();
-        XMLStreamReader reader = factory.createXMLStreamReader(xmlStream);
+    static public CrawlPageDTO saveXMLStreamToDB(InputStream xmlStream) throws XMLStreamException, TransformerException, SQLException, ClassNotFoundException {
 
         boolean inProduct = false;
         boolean inTitle = false;
@@ -166,160 +164,180 @@ public class Crawler {
         String image = null;
         String url = null;
 
+        // Report lists
+        MacbookListDTO createdMacbookList = new MacbookListDTO();
+        MacbookListDTO updatedMacbookList = new MacbookListDTO();
+        MacbookListDTO failedMacbookList = new MacbookListDTO();
+        MacbookListDTO invalidatedMacbookList = new MacbookListDTO();
+        MacbookListDTO unmatchedMacbookList = new MacbookListDTO();
+        AccessoryListDTO createdAccessoryList = new AccessoryListDTO();
+        AccessoryListDTO updatedAccessoryList = new AccessoryListDTO();
+        AccessoryListDTO failedAccessoryList = new AccessoryListDTO();
+        AccessoryListDTO invalidatedAccessoryList = new AccessoryListDTO();
+        AccessoryListDTO unmatchedAccessoryList = new AccessoryListDTO();
+
         AccessoryCategoryDAO accessoryCategoryDAO = new AccessoryCategoryDAO();
         AccessoryCategoryListDTO accessoryCategoryList = accessoryCategoryDAO.getAccessoryCategoryList();
-        
+
         MacbookModelDAO macbookModelDAO = new MacbookModelDAO();
-        MacbookModelListDTO macbookModelList = macbookModelDAO.getMacbookModelList();
+        MacbookModelListDTO macbookModelList = macbookModelDAO.getMacbookModelList(true, false);
+
+        XMLInputFactory factory = XMLInputFactory.newFactory();
+        XMLStreamReader reader = factory.createXMLStreamReader(xmlStream);
 
         while (reader.hasNext()) {
-            int eventType = reader.getEventType();
+            try {
+                int eventType = reader.getEventType();
 
-            switch (eventType) {
-                case XMLStreamConstants.START_ELEMENT: {
-                    String localName = reader.getLocalName();
-                    if (localName.equals("products")) {
-                        domain = reader.getNamespaceURI();
-                    } else if (localName.equals("product")) {
-                        inProduct = true;
-                    } else if (localName.equals("title")) {
-                        inTitle = true;
-                    } else if (localName.equals("price")) {
-                        inPrice = true;
-                    } else if (localName.equals("image")) {
-                        inImage = true;
-                    } else if (localName.equals("url")) {
-                        inUrl = true;
-                    }
-                    break;
-                }
-                case XMLStreamConstants.CHARACTERS:
-                    String text = reader.getText();
-                    if (inTitle) {
-                        title = text;
-                    } else if (inPrice) {
-                        price = text;
-                    } else if (inImage) {
-                        image = text;
-                    } else if (inUrl) {
-                        url = text;
-                    }
-                    break;
-                case XMLStreamConstants.END_ELEMENT: {
-                    String localName = reader.getLocalName();
-                    if (localName.equals("product")) {
-                        inProduct = false;
-                        
-                        // Validate accessory
-                        String category = Utilities.getCategoryFromTitle(title, accessoryCategoryList);
-                        if (category != null) {
-                            AccessoryErrorDTO error = AccessoryValidator.validateCreateAccessory(domain, category, title, price, image, url);
-                            if (error == null) {
-                                try {
-                                    AccessoryDAO accessoryDAO = new AccessoryDAO();
-                                    if (!accessoryDAO.exists(domain, category, title)) {
-                                        // Create new accessory
-                                        accessoryDAO = new AccessoryDAO();
-                                        if (accessoryDAO.createAccessory(domain, category, title, Integer.parseInt(price), image, url)) {;
-                                            System.out.println("Create accessory successfully!");
-                                            System.out.println("Domain: " + domain);
-                                            System.out.println("Category: " + category);
-                                            System.out.println("Title: " + title);
-                                        } else {
-                                            System.out.println("Save accessory failed!");
-                                            System.out.println("Domain: " + domain);
-                                            System.out.println("Category: " + category);
-                                            System.out.println("Title: " + title);
-                                        }
-                                    } else {
-                                        // Update accessory
-                                        accessoryDAO = new AccessoryDAO();
-                                        if (accessoryDAO.updateAccessory(domain, category, title, Integer.parseInt(price), image, url)) {;
-                                            System.out.println("Update accessory successfully!");
-                                            System.out.println("Domain: " + domain);
-                                            System.out.println("Category: " + category);
-                                            System.out.println("Title: " + title);
-                                        } else {
-                                            System.out.println("Save accessory failed!");
-                                            System.out.println("Domain: " + domain);
-                                            System.out.println("Category: " + category);
-                                            System.out.println("Title: " + title);
-                                        }
-                                    }
-                                } catch (Exception ex) {
-                                    System.out.println("Save accessory failed!");
-                                    System.out.println("Error: " + ex.getMessage());
-                                }
-//                            System.out.println("win");
-                            } else {
-                                System.out.println("Save accessory failed!");
-                                System.out.println(error.toString());
-                            }
-                            System.out.println("");
+                switch (eventType) {
+                    case XMLStreamConstants.START_ELEMENT: {
+                        String localName = reader.getLocalName();
+                        if (localName.equals("products")) {
+                            domain = reader.getNamespaceURI();
+                        } else if (localName.equals("product")) {
+                            inProduct = true;
+                        } else if (localName.equals("title")) {
+                            inTitle = true;
+                        } else if (localName.equals("price")) {
+                            inPrice = true;
+                        } else if (localName.equals("image")) {
+                            inImage = true;
+                        } else if (localName.equals("url")) {
+                            inUrl = true;
                         }
-                        
-                        // Validate macbook
-                        String modelID = Utilities.getModelIDFromTitle(title, macbookModelList);
-                        if (modelID != null) {
-                            MacbookErrorDTO error = MacbookValidator.validateCreateMacbook(domain, modelID, title, price, image, url);
-                            if (error == null) {
-                                try {
-                                    MacbookDAO macbookDAO = new MacbookDAO();
-                                    if (!macbookDAO.exists(domain, modelID, title)) {
-                                        // Create new macbook
-                                        macbookDAO = new MacbookDAO();
-                                        if (macbookDAO.createMacbook(domain, modelID, title, Integer.parseInt(price), image, url)) {;
-                                            System.out.println("Create macbook successfully!");
-                                            System.out.println("Domain: " + domain);
-                                            System.out.println("Model ID: " + modelID);
-                                            System.out.println("Title: " + title);
-                                        } else {
-                                            System.out.println("Save macbook failed!");
-                                            System.out.println("Domain: " + domain);
-                                            System.out.println("Model ID: " + modelID);
-                                            System.out.println("Title: " + title);
-                                        }
-                                    } else {
-                                        // Update macbook
-                                        macbookDAO = new MacbookDAO();
-                                        if (macbookDAO.updateMacbook(domain, modelID, title, Integer.parseInt(price), image, url)) {;
-                                            System.out.println("Update macbook successfully!");
-                                            System.out.println("Domain: " + domain);
-                                            System.out.println("Model ID: " + modelID);
-                                            System.out.println("Title: " + title);
-                                        } else {
-                                            System.out.println("Save macbook failed!");
-                                            System.out.println("Domain: " + domain);
-                                            System.out.println("Model ID: " + modelID);
-                                            System.out.println("Title: " + title);
-                                        }
-                                    }
-                                } catch (Exception ex) {
-                                    System.out.println("Save macbook failed!");
-                                    System.out.println("Error: " + ex.getMessage());
-                                }
-//                            System.out.println("win");
-                            } else {
-                                System.out.println("Save macbook failed!");
-                                System.out.println(error.toString());
-                            }
-                            System.out.println("");
-                        }
-                    } else if (localName.equals("title")) {
-                        inTitle = false;
-                    } else if (localName.equals("price")) {
-                        inPrice = false;
-                    } else if (localName.equals("image")) {
-                        inImage = false;
-                    } else if (localName.equals("url")) {
-                        inUrl = false;
+                        break;
                     }
-                    break;
+                    case XMLStreamConstants.CHARACTERS:
+                        String text = reader.getText();
+                        if (inTitle) {
+                            title = text;
+                        } else if (inPrice) {
+                            price = text;
+                        } else if (inImage) {
+                            image = text;
+                        } else if (inUrl) {
+                            url = text;
+                        }
+                        break;
+                    case XMLStreamConstants.END_ELEMENT: {
+                        String localName = reader.getLocalName();
+                        if (localName.equals("product")) {
+                            inProduct = false;
+
+                            // Validate accessory
+                            String category = Utilities.getCategoryFromTitle(title, accessoryCategoryList);
+
+                            if (category != null) {
+                                AccessoryErrorDTO error = AccessoryValidator.validateCreateAccessory(domain, category, title, price, image, url);
+                                if (error == null) {
+                                    try {
+                                        AccessoryDAO accessoryDAO = new AccessoryDAO();
+                                        if (!accessoryDAO.exists(domain, category, title)) {
+                                            // Create new accessory
+                                            accessoryDAO = new AccessoryDAO();
+                                            if (accessoryDAO.createAccessory(domain, category, title, Integer.parseInt(price), image, url)) {
+                                                AccessoryDTO createdAccessory = new AccessoryDTO(domain, category, title, Integer.parseInt(price), image, url, 0);
+                                                createdAccessoryList.getAccessory().add(createdAccessory);
+                                            } else {
+                                                AccessoryDTO failedAccessory = new AccessoryDTO(domain, category, title, Integer.parseInt(price), image, url, 0);
+                                                failedAccessoryList.getAccessory().add(failedAccessory);
+                                            }
+                                        } else {
+                                            // Update accessory
+                                            accessoryDAO = new AccessoryDAO();
+                                            if (accessoryDAO.updateAccessory(domain, category, title, Integer.parseInt(price), image, url)) {
+                                                AccessoryDTO updatedAccessory = new AccessoryDTO(domain, category, title, Integer.parseInt(price), image, url, 0);
+                                                updatedAccessoryList.getAccessory().add(updatedAccessory);
+                                            } else {
+                                                AccessoryDTO failedAccessory = new AccessoryDTO(domain, category, title, Integer.parseInt(price), image, url, 0);
+                                                failedAccessoryList.getAccessory().add(failedAccessory);
+                                            }
+                                        }
+                                    } catch (Exception ex) {
+                                        AccessoryDTO failedAccessory = new AccessoryDTO(domain, category, title, Integer.parseInt(price), image, url, 0);
+                                        failedAccessoryList.getAccessory().add(failedAccessory);
+                                    }
+                                } else {
+                                    AccessoryDTO invalidatedAccessory = new AccessoryDTO(domain, category, title, Integer.parseInt(price), image, url, 0);
+                                    invalidatedAccessoryList.getAccessory().add(invalidatedAccessory);
+                                }
+                            } else {
+                                AccessoryDTO unmatchedAccessory = new AccessoryDTO(domain, category, title, Integer.parseInt(price), image, url, 0);
+                                unmatchedAccessoryList.getAccessory().add(unmatchedAccessory);
+                            }
+
+                            // Validate macbook
+                            String modelID = Utilities.getModelIDFromTitle(title, macbookModelList);
+                            if (modelID != null) {
+                                MacbookErrorDTO error = MacbookValidator.validateCreateMacbook(domain, modelID, title, price, image, url);
+                                if (error == null) {
+                                    try {
+                                        MacbookDAO macbookDAO = new MacbookDAO();
+                                        if (!macbookDAO.exists(domain, modelID, title)) {
+                                            // Create new macbook
+                                            macbookDAO = new MacbookDAO();
+                                            if (macbookDAO.createMacbook(domain, modelID, title, Integer.parseInt(price), image, url)) {
+                                                MacbookDTO createdMacbook = new MacbookDTO(domain, modelID, title, Integer.parseInt(price), image, url);
+                                                createdMacbookList.getMacbook().add(createdMacbook);
+                                            } else {
+                                                MacbookDTO failedMacbook = new MacbookDTO(domain, modelID, title, Integer.parseInt(price), image, url);
+                                                failedMacbookList.getMacbook().add(failedMacbook);
+                                            }
+                                        } else {
+                                            // Update macbook
+                                            macbookDAO = new MacbookDAO();
+                                            if (macbookDAO.updateMacbook(domain, modelID, title, Integer.parseInt(price), image, url)) {
+                                                MacbookDTO updatedMacbook = new MacbookDTO(domain, modelID, title, Integer.parseInt(price), image, url);
+                                                updatedMacbookList.getMacbook().add(updatedMacbook);
+                                            } else {
+                                                MacbookDTO failedMacbook = new MacbookDTO(domain, modelID, title, Integer.parseInt(price), image, url);
+                                                failedMacbookList.getMacbook().add(failedMacbook);
+                                            }
+                                        }
+                                    } catch (Exception ex) {
+                                        MacbookDTO updatedMacbook = new MacbookDTO(domain, modelID, title, Integer.parseInt(price), image, url);
+                                        updatedMacbookList.getMacbook().add(updatedMacbook);
+                                    }
+                                } else {
+                                    MacbookDTO invalidatedMacbook = new MacbookDTO(domain, modelID, title, Integer.parseInt(price), image, url);
+                                    invalidatedMacbookList.getMacbook().add(invalidatedMacbook);
+                                }
+                            } else {
+                                MacbookDTO unmatchedMacbook = new MacbookDTO(domain, modelID, title, Integer.parseInt(price), image, url);
+                                unmatchedMacbookList.getMacbook().add(unmatchedMacbook);
+                            }
+                        } else if (localName.equals("title")) {
+                            inTitle = false;
+                        } else if (localName.equals("price")) {
+                            inPrice = false;
+                        } else if (localName.equals("image")) {
+                            inImage = false;
+                        } else if (localName.equals("url")) {
+                            inUrl = false;
+                        }
+                        break;
+                    }
+                    default:
+                        break;
                 }
-                default:
-                    break;
+            } catch (Exception e) {
+
+            } finally {
+                reader.next();
             }
-            reader.next();
         }
+
+//        System.out.println("created Accessory: " + createdAccessoryList.getAccessory().size());
+//        System.out.println("updated Accessory: " + updatedAccessoryList.getAccessory().size());
+//        System.out.println("failed Accessory: " + failedAccessoryList.getAccessory().size());
+//        System.out.println("invalidated Accessory: " + invalidatedAccessoryList.getAccessory().size());
+//        System.out.println("unmatched Accessory: " + unmatchedAccessoryList.getAccessory().size());
+//        
+//        System.out.println("created Macbook: " + createdMacbookList.getMacbook().size());
+//        System.out.println("updated Macbook: " + updatedMacbookList.getMacbook().size());
+//        System.out.println("failed Macbook: " + failedMacbookList.getMacbook().size());
+//        System.out.println("invalidated Macbook: " + invalidatedMacbookList.getMacbook().size());
+//        System.out.println("unmatched Macbook: " + unmatchedMacbookList.getMacbook().size());
+        return new CrawlPageDTO(new SimpleDateFormat("HH:mm:ss").format(new Date()), null, createdMacbookList, updatedMacbookList, failedMacbookList, invalidatedMacbookList, unmatchedMacbookList, createdAccessoryList, updatedAccessoryList, failedAccessoryList, invalidatedAccessoryList, unmatchedAccessoryList);
     }
 }

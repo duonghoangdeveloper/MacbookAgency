@@ -185,4 +185,20 @@ public class MacbookDAO implements Serializable {
 
         return result;
     }
+    
+    public int deleteMacbookByModelID(String modelID) throws ClassNotFoundException, SQLException {
+        int result = 0;
+
+        try {
+            conn = DBUtilities.createConnection();
+            String sql = "DELETE FROM Macbook WHERE modelID = ?";
+            preStm = conn.prepareStatement(sql);
+            preStm.setString(1, modelID);
+            result = preStm.executeUpdate();
+        } finally {
+            closeConnection();
+        }
+
+        return result;
+    }
 }

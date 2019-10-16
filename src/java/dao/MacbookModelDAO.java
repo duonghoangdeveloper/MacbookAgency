@@ -5,6 +5,7 @@
  */
 package dao;
 
+import dto.MacbookListDTO;
 import dto.MacbookModelDTO;
 import dto.MacbookModelListDTO;
 import dto.MacbookModelKeywordListDTO;
@@ -51,7 +52,7 @@ public class MacbookModelDAO implements Serializable {
         }
     }
 
-    public MacbookModelListDTO getMacbookModelList() throws SQLException, ClassNotFoundException {
+    public MacbookModelListDTO getMacbookModelList(boolean getKeyword, boolean getMacbook) throws SQLException, ClassNotFoundException {
         MacbookModelListDTO result = null;
 
         try {
@@ -70,10 +71,20 @@ public class MacbookModelDAO implements Serializable {
                 boolean touchbar = rs.getBoolean("touchbar");
                 String thumbnail = rs.getString("thumbnail");
 
-                MacbookModelKeywordDAO dao = new MacbookModelKeywordDAO();
-                MacbookModelKeywordListDTO macbookModelKeywordList = dao.getMacbookModelKeywordListByModelID(modelID);
-
-                MacbookModelDTO dto = new MacbookModelDTO(modelID, type, year, ssd, screenSize, touchbar, thumbnail, macbookModelKeywordList);
+                MacbookModelKeywordListDTO macbookModelKeywordList = null;
+                MacbookListDTO macbookList = null;
+                
+                if (getKeyword) {
+                    MacbookModelKeywordDAO dao = new MacbookModelKeywordDAO();
+                    macbookModelKeywordList = dao.getMacbookModelKeywordListByModelID(modelID);
+                }
+                
+                if (getMacbook) {
+                    MacbookDAO dao = new MacbookDAO();
+                    macbookList = dao.getMacbookListByModelID(modelID);
+                }
+                
+                MacbookModelDTO dto = new MacbookModelDTO(modelID, type, year, ssd, screenSize, touchbar, thumbnail, macbookModelKeywordList, macbookList);
                 result.getMacbookModel().add(dto);
             }
         } finally {
@@ -83,7 +94,60 @@ public class MacbookModelDAO implements Serializable {
         return result;
     }
 
-    public MacbookModelDTO getMacbookModel(String modelID) throws ClassNotFoundException, SQLException {
+    public MacbookModelListDTO filterMacbookModelList(String txtType, String txtYear, String txtSsd, String txtScreenSize, String txtTouchbar) throws SQLException, ClassNotFoundException {
+        MacbookModelListDTO result = null;
+
+        try {
+            conn = DBUtilities.createConnection();
+            String sql = "SELECT modelID, type, year, ssd, screenSize, touchbar, thumbnail FROM MacbookModel";
+            preStm = conn.prepareStatement(sql);
+            rs = preStm.executeQuery();
+
+            result = new MacbookModelListDTO();
+            while (rs.next()) {
+
+                String modelID = rs.getString("modelID");
+                String type = rs.getString("type");
+                int year = rs.getInt("year");
+                int ssd = rs.getInt("ssd");
+                float screenSize = rs.getFloat("screenSize");
+                boolean touchbar = rs.getBoolean("touchbar");
+                String thumbnail = rs.getString("thumbnail");
+
+                if (txtType != null && !txtType.equals(type)) {
+                    continue;
+                }
+
+                if (txtYear != null && Integer.parseInt(txtYear) != year) {
+                    continue;
+                }
+
+                if (txtSsd != null && Integer.parseInt(txtSsd) != ssd) {
+                    continue;
+                }
+
+                if (txtScreenSize != null && Float.parseFloat(txtScreenSize) != screenSize) {
+                    continue;
+                }
+
+                if (txtTouchbar != null && Boolean.parseBoolean(txtTouchbar) != touchbar) {
+                    continue;
+                }
+
+                MacbookDAO dao = new MacbookDAO();
+                MacbookListDTO macbookList = dao.getMacbookListByModelID(modelID);
+
+                MacbookModelDTO dto = new MacbookModelDTO(modelID, type, year, ssd, screenSize, touchbar, thumbnail, null, macbookList);
+                result.getMacbookModel().add(dto);
+            }
+        } finally {
+            closeConnection();
+        }
+
+        return result;
+    }
+
+    public MacbookModelDTO getMacbookModel(String modelID, boolean getKeyword, boolean getMacbook) throws ClassNotFoundException, SQLException {
         MacbookModelDTO result = null;
 
         try {
@@ -101,10 +165,20 @@ public class MacbookModelDAO implements Serializable {
                 boolean touchbar = rs.getBoolean("touchbar");
                 String thumbnail = rs.getString("thumbnail");
 
-                MacbookModelKeywordDAO dao = new MacbookModelKeywordDAO();
-                MacbookModelKeywordListDTO macbookModelKeywordList = dao.getMacbookModelKeywordListByModelID(modelID);
+                MacbookModelKeywordListDTO macbookModelKeywordList = null;
+                MacbookListDTO macbookList = null;
+                
+                if (getKeyword) {
+                    MacbookModelKeywordDAO macbookModelKeywordDAO = new MacbookModelKeywordDAO();
+                    macbookModelKeywordList = macbookModelKeywordDAO.getMacbookModelKeywordListByModelID(modelID);
+                }
 
-                result = new MacbookModelDTO(modelID, type, year, ssd, screenSize, touchbar, thumbnail, macbookModelKeywordList);
+                if (getMacbook) {
+                    MacbookDAO macbookDAO = new MacbookDAO();
+                    macbookList = macbookDAO.getMacbookListByModelID(modelID);
+                }
+                
+                result = new MacbookModelDTO(modelID, type, year, ssd, screenSize, touchbar, thumbnail, macbookModelKeywordList, macbookList);
             }
         } finally {
             closeConnection();
@@ -112,16 +186,16 @@ public class MacbookModelDAO implements Serializable {
 
         return result;
     }
-    
+
     public boolean exists(String modelID) throws ClassNotFoundException, SQLException {
         boolean result = false;
-        
+
         try {
             conn = DBUtilities.createConnection();
-            
+
             String sql = "SELECT TOP 1 modelID FROM MacbookModel WHERE modelID = '" + modelID + "'";
             preStm = conn.prepareStatement(sql);
-            
+
             rs = preStm.executeQuery();
             if (rs.next()) {
                 result = true;
@@ -129,7 +203,7 @@ public class MacbookModelDAO implements Serializable {
         } finally {
             closeConnection();
         }
-        
+
         return result;
     }
 
@@ -161,7 +235,7 @@ public class MacbookModelDAO implements Serializable {
         try {
             conn = DBUtilities.createConnection();
             MacbookModelDAO dao = new MacbookModelDAO();
-            MacbookModelDTO MacbookModel = dao.getMacbookModel(modelID);
+            MacbookModelDTO MacbookModel = dao.getMacbookModel(modelID, false, false);
             if (MacbookModel != null) {
                 String newThumbnail = MacbookModel.getThumbnail();
                 String sql = "UPDATE MacbookModel SET thumbnail = ? WHERE modelID = '" + modelID + "'";
@@ -170,7 +244,7 @@ public class MacbookModelDAO implements Serializable {
                 if (thumbnail != null) {
                     newThumbnail = thumbnail;
                 }
-                
+
                 preStm.setString(1, newThumbnail);
 
                 result = preStm.executeUpdate() == 1;
@@ -186,6 +260,10 @@ public class MacbookModelDAO implements Serializable {
         boolean result = false;
 
         try {
+            // Delete all macbook by modelID
+            MacbookDAO dao = new MacbookDAO();
+            dao.deleteMacbookByModelID(modelID);
+
             conn = DBUtilities.createConnection();
             String sql = "DELETE FROM MacbookModel WHERE modelID = '" + modelID + "'";
             preStm = conn.prepareStatement(sql);

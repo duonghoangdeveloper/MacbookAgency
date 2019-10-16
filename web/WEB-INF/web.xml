@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <servlet>
-        <servlet-name>CrawlServlet</servlet-name>
-        <servlet-class>servlet.CrawlServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>MainServlet</servlet-name>
         <servlet-class>servlet.MainServlet</servlet-class>
     </servlet>
@@ -104,10 +100,46 @@
         <servlet-name>DeleteAccessoryCategoryKeywordServlet</servlet-name>
         <servlet-class>servlet.accessoryCategoryKeyword.DeleteAccessoryCategoryKeywordServlet</servlet-class>
     </servlet>
-    <servlet-mapping>
-        <servlet-name>CrawlServlet</servlet-name>
-        <url-pattern>/CrawlServlet</url-pattern>
-    </servlet-mapping>
+    <servlet>
+        <servlet-name>CrawlDomainServlet</servlet-name>
+        <servlet-class>servlet.crawl.CrawlDomainServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FilterMacbookModelList</servlet-name>
+        <servlet-class>servlet.macbookModel.FilterMacbookModelList</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FilterMacbookModelListServlet</servlet-name>
+        <servlet-class>servlet.macbookModel.FilterMacbookModelListServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetCategoryListServlet</servlet-name>
+        <servlet-class>servlet.accessoryCategory.GetCategoryListServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetAccessoryListXMLStringServlet</servlet-name>
+        <servlet-class>servlet.accessory.GetAccessoryListXMLStringServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetMacbookModelListXMLStringServlet</servlet-name>
+        <servlet-class>servlet.macbookModel.GetMacbookModelListXMLStringServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetMacbookModelXMLStringServlet</servlet-name>
+        <servlet-class>servlet.macbookModel.GetMacbookModelXMLStringServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CountAccessoryServlet</servlet-name>
+        <servlet-class>servlet.accessory.CountAccessoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ClickAccessoryServlet</servlet-name>
+        <servlet-class>servlet.accessory.ClickAccessoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteAccessoryServlet</servlet-name>
+        <servlet-class>servlet.accessory.DeleteAccessoryServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>MainServlet</servlet-name>
         <url-pattern>/MainServlet</url-pattern>
@@ -208,12 +240,52 @@
         <servlet-name>DeleteAccessoryCategoryKeywordServlet</servlet-name>
         <url-pattern>/DeleteAccessoryCategoryKeywordServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CrawlDomainServlet</servlet-name>
+        <url-pattern>/CrawlDomainServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FilterMacbookModelList</servlet-name>
+        <url-pattern>/FilterMacbookModelList</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FilterMacbookModelListServlet</servlet-name>
+        <url-pattern>/FilterMacbookModelListServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetCategoryListServlet</servlet-name>
+        <url-pattern>/GetCategoryListServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetAccessoryListXMLStringServlet</servlet-name>
+        <url-pattern>/GetAccessoryListXMLStringServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetMacbookModelListXMLStringServlet</servlet-name>
+        <url-pattern>/GetMacbookModelListXMLStringServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetMacbookModelXMLStringServlet</servlet-name>
+        <url-pattern>/GetMacbookModelXMLStringServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CountAccessoryServlet</servlet-name>
+        <url-pattern>/CountAccessoryServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ClickAccessoryServlet</servlet-name>
+        <url-pattern>/ClickAccessoryServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteAccessoryServlet</servlet-name>
+        <url-pattern>/DeleteAccessoryServlet</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>login.jsp</welcome-file>
+        <welcome-file>macbook.jsp</welcome-file>
     </welcome-file-list>
 </web-app>

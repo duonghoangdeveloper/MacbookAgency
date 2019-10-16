@@ -14,10 +14,13 @@
         <title>Error Page</title>
     </head>
     <body>
-        <h1>ERROR!</h1>
-        <c:if test="${ERROR_MESSAGE != null}">
-            <p>Message: ${ERROR_MESSAGE}</p>
-        </c:if>
+        <div style="margin: 15px;">
+            <h1>ERROR!</h1>
+            <c:if test="${ERROR_MESSAGE != null}">
+                <p>Message: ${ERROR_MESSAGE}</p>
+            </c:if>
             <button type="button" onclick="history.back();">Back</button>
+        </div>
+        
     </body>
 </html>

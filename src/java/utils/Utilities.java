@@ -45,7 +45,10 @@ public class Utilities {
     static private final String DELETE_PAGE_SERVLET = "DeletePageServlet";
 
     // MacbookModel
+    static private final String FILTER_MACBOOK_MODEL_LIST_SERVLET = "FilterMacbookModelListServlet";
     static private final String GET_MACBOOK_MODEL_LIST_SERVLET = "GetMacbookModelListServlet";
+    static private final String GET_MACBOOK_MODEL_LIST_XML_STRING_SERVLET = "GetMacbookModelListXMLStringServlet";
+    static private final String GET_MACBOOK_MODEL_XML_STRING_SERVLET = "GetMacbookModelXMLStringServlet";
     static private final String CREATE_MACBOOK_MODEL_SERVLET = "CreateMacbookModelServlet";
     static private final String UPDATE_MACBOOK_MODEL_SERVLET = "UpdateMacbookModelServlet";
     static private final String DELETE_MACBOOK_MODEL_SERVLET = "DeleteMacbookModelServlet";
@@ -55,6 +58,7 @@ public class Utilities {
     static private final String DELETE_MACBOOK_MODEL_KEYWORD_SERVLET = "DeleteMacbookModelKeywordServlet";
 
     // MacbookModel
+    static private final String GET_CATEGORY_LIST_SERVLET = "GetCategoryListServlet";
     static private final String GET_ACCESSORY_CATEGORY_LIST_SERVLET = "GetAccessoryCategoryListServlet";
     static private final String CREATE_ACCESSORY_CATEGORY_SERVLET = "CreateAccessoryCategoryServlet";
     static private final String UPDATE_ACCESSORY_CATEGORY_SERVLET = "UpdateAccessoryCategoryServlet";
@@ -63,6 +67,15 @@ public class Utilities {
     // AccessoryCategoryKeyword
     static private final String CREATE_ACCESSORY_CATEGORY_KEYWORD_SERVLET = "CreateAccessoryCategoryKeywordServlet";
     static private final String DELETE_ACCESSORY_CATEGORY_KEYWORD_SERVLET = "DeleteAccessoryCategoryKeywordServlet";
+    
+    // Crawl
+    static private final String CRAWL_DOMAIN_SERVLET = "CrawlDomainServlet";
+    
+    // Accessory
+    static private final String GET_ACCESSORY_LIST_XML_STRING_SERVLET = "GetAccessoryListXMLStringServlet";
+    static private final String COUNT_ACCESSORY_SERVLET = "CountAccessoryServlet";
+    static private final String CLICK_ACCESSORY_SERVLET = "ClickAccessoryServlet";
+    static private final String DELETE_ACCESSORY_SERVLET = "DeleteAccessoryServlet";
 
     public static String getURLByAction(String action) {
 
@@ -96,6 +109,12 @@ public class Utilities {
             return DELETE_PAGE_SERVLET;
         } else if ("GetMacbookModelList".equals(action)) {
             return GET_MACBOOK_MODEL_LIST_SERVLET;
+        } else if ("GetMacbookModelListXMLString".equals(action)) {
+            return GET_MACBOOK_MODEL_LIST_XML_STRING_SERVLET;
+        } else if ("GetMacbookModelXMLString".equals(action)) {
+            return GET_MACBOOK_MODEL_XML_STRING_SERVLET;
+        } else if ("FilterMacbookModelList".equals(action)) {
+            return FILTER_MACBOOK_MODEL_LIST_SERVLET;
         } else if ("CreateMacbookModel".equals(action)) {
             return CREATE_MACBOOK_MODEL_SERVLET;
         } else if ("UpdateMacbookModel".equals(action)) {
@@ -106,7 +125,9 @@ public class Utilities {
             return CREATE_MACBOOK_MODEL_KEYWORD_SERVLET;
         } else if ("DeleteMacbookModelKeyword".equals(action)) {
             return DELETE_MACBOOK_MODEL_KEYWORD_SERVLET;
-        } else if ("GetAccessoryCategoryList".equals(action)) {
+        } else if ("GetCategoryList".equals(action)) {
+            return GET_CATEGORY_LIST_SERVLET;
+        }  else if ("GetAccessoryCategoryList".equals(action)) {
             return GET_ACCESSORY_CATEGORY_LIST_SERVLET;
         } else if ("CreateAccessoryCategory".equals(action)) {
             return CREATE_ACCESSORY_CATEGORY_SERVLET;
@@ -118,6 +139,16 @@ public class Utilities {
             return CREATE_ACCESSORY_CATEGORY_KEYWORD_SERVLET;
         } else if ("DeleteAccessoryCategoryKeyword".equals(action)) {
             return DELETE_ACCESSORY_CATEGORY_KEYWORD_SERVLET;
+        } else if ("CrawlDomain".equals(action)) {
+            return CRAWL_DOMAIN_SERVLET;
+        } else if ("GetAccessoryListXMLString".equals(action)) {
+            return GET_ACCESSORY_LIST_XML_STRING_SERVLET;
+        } else if ("CountAccessory".equals(action)) {
+            return COUNT_ACCESSORY_SERVLET;
+        } else if ("ClickAccessory".equals(action)) {
+            return CLICK_ACCESSORY_SERVLET;
+        } else if ("DeleteAccessory".equals(action)) {
+            return DELETE_ACCESSORY_SERVLET;
         }
 
         return ERROR_PAGE;
@@ -169,16 +200,4 @@ public class Utilities {
         
         return result;
     }
-    
-//    public static String joinStringsWithComma(String[] strings) {
-//        ArrayList<String> notEmptyStrings = new ArrayList<String>();
-//        
-//        for (String s : strings) {
-//            if (s != null || !s.isEmpty()) {
-//                notEmptyStrings.add(s);
-//            }
-//        }
-//        
-//        return String.join(", ", notEmptyStrings);
-//    }
 }

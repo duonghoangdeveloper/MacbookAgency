@@ -35,6 +35,7 @@ public class MainServlet extends HttpServlet {
         
         String action = request.getParameter("action");
         String url = Utilities.getURLByAction(action);
+        System.out.println(url);
 
         RequestDispatcher rd = request.getRequestDispatcher(url);
         rd.forward(request, response);

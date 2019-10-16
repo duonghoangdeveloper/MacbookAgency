@@ -18,10 +18,10 @@
         <title>Create Macbook Model</title>
     </head>
     <body>
-        <%@include file="component/dashboardHeader.jsp" %>
+        <%@include file="component/dashboardTopbar.jsp" %>
         <main class="dashboard-body">
             <c:set var="dashboardAsideActiveItem" value="macbookModels"/>
-            <%@include file="component/dashboardAside.jsp" %>
+            <%@include file="component/dashboardSidebar.jsp" %>
             <section class="dashboard-main">
 
                 <h1>Create New Macbook Model</h1>

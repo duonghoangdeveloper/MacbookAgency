@@ -19,10 +19,10 @@
         <title>Accessory Categories Page</title>
     </head>
     <body>
-        <%@include file="component/dashboardHeader.jsp" %>
+        <%@include file="component/dashboardTopbar.jsp" %>
         <main class="dashboard-body">
             <c:set var="dashboardAsideActiveItem" value="accessoryCategories"/>
-            <%@include file="component/dashboardAside.jsp" %>
+            <%@include file="component/dashboardSidebar.jsp" %>
             <section class="dashboard-main">
                 <h1>Accessory Category List & Keywords To Crawl Data</h1>
                 <table>
@@ -30,8 +30,8 @@
                         <tr>
                             <th>No</th>
                             <th>Category</th>
-                            <th>Thumbnail</th>
                             <th>Keywords</th>
+                            <th>Products</th>
                             <th>Update</th>
                             <th>Delete</th>
                         </tr>
@@ -41,13 +41,20 @@
                             <tr>
                                 <td>${counter.count}</td>
                                 <td><x:out select="$accessoryCategoryDocument/category"/></td>
-                                <td><x:out select="$accessoryCategoryDocument/thumbnail"/></td>
+                                
                                 <td>
                                     <div class="array-cell">
                                         <x:forEach var="accessoryCategoryKeywordDocument" select="$accessoryCategoryDocument/accessoryCategoryKeywordList/accessoryCategoryKeyword">
                                             <span><x:out select="$accessoryCategoryKeywordDocument/keyword"/></span>
                                         </x:forEach> 
                                     </div>
+                                </td>
+                                <td>
+                                    <form action="accessoryCategoryProducts.jsp" method="POST">
+                                        <button type="submit">Products</button>
+                                        <input type="hidden" name="category" value="<x:out select="$accessoryCategoryDocument/category"/>"/>
+                                        <input type="hidden" name="page" value="0"/>
+                                    </form>
                                 </td>
                                 <td>
                                     <form action="updateAccessoryCategory.jsp" method="POST">
@@ -67,9 +74,6 @@
                     </tbody>
                 </table>
                 <button type="button" onclick="location.replace('createAccessoryCategory.jsp');">Create Accessory Category</button>
-                <!--                <form action="MainServlet" method="POST">
-                                    <input type="submit" name="action" value="Crawl"/>
-                                </form>-->
             </section>
         </main>
     </body>

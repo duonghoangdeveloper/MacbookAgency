@@ -50,12 +50,41 @@ public class AccessoryDAO implements Serializable {
         }
     }
 
+    public AccessoryListDTO getAccessoryListByCategoryAndPage(String category, int page) throws SQLException, ClassNotFoundException {
+        AccessoryListDTO result = null;
+
+        try {
+            conn = DBUtilities.createConnection();
+            String sql = "SELECT domain, title, price, image, url, clickCount FROM Accessory WHERE category = ? ORDER BY price OFFSET ? ROWS FETCH NEXT 20 ROWS ONLY";
+            preStm = conn.prepareStatement(sql);
+            preStm.setString(1, category);
+            preStm.setInt(2, page * 20);
+            rs = preStm.executeQuery();
+
+            result = new AccessoryListDTO();
+            while (rs.next()) {
+                String domain = rs.getString("domain");
+                String title = rs.getString("title");
+                int price = rs.getInt("price");
+                String image = rs.getString("image");
+                String url = rs.getString("url");
+                int clickCount = rs.getInt("clickCount");
+                AccessoryDTO dto = new AccessoryDTO(domain, category, title, price, image, url, clickCount);
+                result.getAccessory().add(dto);
+            }
+        } finally {
+            closeConnection();
+        }
+
+        return result;
+    }
+
     public AccessoryListDTO getAccessoryList() throws SQLException, ClassNotFoundException {
         AccessoryListDTO result = null;
 
         try {
             conn = DBUtilities.createConnection();
-            String sql = "SELECT domain, category, title, price, image, url FROM Accessory";
+            String sql = "SELECT domain, category, title, price, image, url, clickCount FROM Accessory";
             preStm = conn.prepareStatement(sql);
             rs = preStm.executeQuery();
 
@@ -67,7 +96,8 @@ public class AccessoryDAO implements Serializable {
                 int price = rs.getInt("price");
                 String image = rs.getString("image");
                 String url = rs.getString("url");
-                AccessoryDTO dto = new AccessoryDTO(domain, category, title, price, image, url);
+                int clickCount = rs.getInt("clickCount");
+                AccessoryDTO dto = new AccessoryDTO(domain, category, title, price, image, url, clickCount);
                 result.getAccessory().add(dto);
             }
         } finally {
@@ -82,7 +112,7 @@ public class AccessoryDAO implements Serializable {
 
         try {
             conn = DBUtilities.createConnection();
-            String sql = "SELECT domain, title, price, image, url FROM Accessory WHERE category = '" + category + "'";
+            String sql = "SELECT domain, title, price, image, url, clickCount FROM Accessory WHERE category = '" + category + "'";
             preStm = conn.prepareStatement(sql);
             rs = preStm.executeQuery();
 
@@ -93,8 +123,59 @@ public class AccessoryDAO implements Serializable {
                 int price = rs.getInt("price");
                 String image = rs.getString("image");
                 String url = rs.getString("url");
-                AccessoryDTO dto = new AccessoryDTO(domain, category, title, price, image, url);
+                int clickCount = rs.getInt("clickCount");
+                AccessoryDTO dto = new AccessoryDTO(domain, category, title, price, image, url, clickCount);
                 result.getAccessory().add(dto);
+            }
+        } finally {
+            closeConnection();
+        }
+
+        return result;
+    }
+
+    public int clickAccessory(String domain, String category, String title) throws SQLException, ClassNotFoundException {
+        int result = 0;
+
+        try {
+            conn = DBUtilities.createConnection();
+            String sql = "UPDATE Accessory SET clickCount = clickCount + 1 WHERE domain = ? AND category = ? AND title = ?";
+            preStm = conn.prepareStatement(sql);
+            preStm.setString(1, domain);
+            preStm.setString(2, category);
+            preStm.setString(3, title);
+
+            if (preStm.executeUpdate() == 1) {
+                conn = DBUtilities.createConnection();
+                sql = "SELECT clickCount FROM Accessory WHERE domain = ? AND category = ? AND title = ?";
+                preStm = conn.prepareStatement(sql);
+                preStm.setString(1, domain);
+                preStm.setString(2, category);
+                preStm.setString(3, title);
+                rs = preStm.executeQuery();
+                if (rs.next()) {
+                    int clickCount = rs.getInt("clickCount");
+                    return clickCount;
+                }
+            };
+        } finally {
+            closeConnection();
+        }
+
+        return result;
+    }
+
+    public int countAccessoryListByCategory(String category) throws SQLException, ClassNotFoundException {
+        int result = 0;
+
+        try {
+            conn = DBUtilities.createConnection();
+            String sql = "SELECT COUNT(*) FROM Accessory WHERE category = '" + category + "'";
+            preStm = conn.prepareStatement(sql);
+            rs = preStm.executeQuery();
+
+            while (rs.next()) {
+                result = rs.getInt(1);
             }
         } finally {
             closeConnection();
@@ -131,7 +212,7 @@ public class AccessoryDAO implements Serializable {
 
         try {
             conn = DBUtilities.createConnection();
-            String sql = "INSERT INTO Accessory (domain, category, title, price, image, url) VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Accessory (domain, category, title, price, image, url, clickCount) VALUES (?, ?, ?, ?, ?, ?, ?)";
             preStm = conn.prepareStatement(sql);
             preStm.setString(1, domain);
             preStm.setString(2, category);
@@ -139,6 +220,7 @@ public class AccessoryDAO implements Serializable {
             preStm.setInt(4, price);
             preStm.setString(5, image);
             preStm.setString(6, url);
+            preStm.setInt(7, 0);
             result = preStm.executeUpdate() == 1;
         } finally {
             closeConnection();
@@ -146,7 +228,7 @@ public class AccessoryDAO implements Serializable {
 
         return result;
     }
-    
+
     public boolean updateAccessory(String domain, String category, String title, int price, String image, String url) throws ClassNotFoundException, SQLException {
         boolean result = false;
 
@@ -167,13 +249,13 @@ public class AccessoryDAO implements Serializable {
 
         return result;
     }
-
+    
     public boolean deleteAccessory(String domain, String category, String title) throws ClassNotFoundException, SQLException {
         boolean result = false;
 
         try {
             conn = DBUtilities.createConnection();
-            String sql = "DELETE FROM Accessory WHERE category = ? AND keyword = ? ADN title = ?";
+            String sql = "DELETE FROM Accessory WHERE domain = ? AND category = ? AND title = ?";
             preStm = conn.prepareStatement(sql);
             preStm.setString(1, domain);
             preStm.setString(2, category);

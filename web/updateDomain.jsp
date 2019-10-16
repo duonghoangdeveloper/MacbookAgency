@@ -13,6 +13,7 @@
 <%@include file="fragment/domainDocumentFragment.jsp" %>
 
 <c:set var="txtName" value="${param.txtName}"/>
+<c:set var="txtName" value="${param.txtXslPath}"/>
 
 <c:choose>
     <c:when test="${txtDomain}">
@@ -32,6 +33,15 @@
     </c:otherwise>
 </c:choose>
 
+<c:choose>
+    <c:when test="${txtXslPath == null}">
+        <x:set var="txtXslPath" select="$domainDocument/xslPath"/>
+    </c:when>
+    <c:otherwise>
+        <x:set var="txtXslPath" select="$txtXslPath"/>
+    </c:otherwise>
+</c:choose>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -40,10 +50,10 @@
         <title>Update Domain</title>
     </head>
     <body>
-        <%@include file="component/dashboardHeader.jsp" %>
+        <%@include file="component/dashboardTopbar.jsp" %>
         <main class="dashboard-body">
             <c:set var="dashboardAsideActiveItem" value="domains"/>
-            <%@include file="component/dashboardAside.jsp" %>
+            <%@include file="component/dashboardSidebar.jsp" %>
             <section class="dashboard-main">
                 <h1>Update Domain</h1>
                 <form action="MainServlet" method="POST">
@@ -64,6 +74,15 @@
                            name="txtName"
                            value="<x:out select="$txtName" />"
                            placeholder="Please enter name"/>
+                    
+                    <div class="input-label">
+                        <label>XSL Path:</label>
+                        <span class="invalid-message">${requestScope.DOMAIN_ERROR_DTO.xslPathErrorMessage}</span>
+                    </div>
+                    <input type="text"
+                           name="txtXslPath"
+                           value="<x:out select="$txtXslPath" />"
+                           placeholder="Please enter XSL path"/>
 
                     <input type="hidden" name="action" value="UpdateDomain"/>
                     <input type="hidden" name="txtDomain" value="<x:out select="$txtDomain" />"/>

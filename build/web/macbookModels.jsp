@@ -19,10 +19,10 @@
         <title>Macbook Models Page</title>
     </head>
     <body>
-        <%@include file="component/dashboardHeader.jsp" %>
+        <%@include file="component/dashboardTopbar.jsp" %>
         <main class="dashboard-body">
             <c:set var="dashboardAsideActiveItem" value="macbookModels"/>
-            <%@include file="component/dashboardAside.jsp" %>
+            <%@include file="component/dashboardSidebar.jsp" %>
             <section class="dashboard-main">
                 <h1>Macbook Model List & Keywords To Crawl Data</h1>
                 <table>
@@ -33,10 +33,11 @@
                             <th>Type</th>
                             <th>Year</th>
                             <th>SSD</th>
-                            <th>ScreenSize</th>
+                            <th>Screen Size</th>
                             <th>Touchbar</th>
                             <th>Thumbnail</th>
                             <th>Keywords</th>
+                            <th>Products</th>
                             <th>Update</th>
                             <th>Delete</th>
                         </tr>
@@ -51,13 +52,19 @@
                                 <td><x:out select="$macbookModelDocument/ssd"/></td>
                                 <td><x:out select="$macbookModelDocument/screenSize"/></td>
                                 <td><x:out select="$macbookModelDocument/touchbar"/></td>
-                                <td><x:out select="$macbookModelDocument/thumbnail"/></td>
+                                <td><img src="<x:out select="$macbookModelDocument/thumbnail"/>" witdh="75" height="75"/></td>
                                 <td>
                                     <div class="array-cell">
                                         <x:forEach var="macbookModelKeywordDocument" select="$macbookModelDocument/macbookModelKeywordList/macbookModelKeyword">
                                             <span><x:out select="$macbookModelKeywordDocument/keyword"/></span>
                                         </x:forEach> 
                                     </div>
+                                </td>
+                                <td>
+                                    <form action="macbookModelProducts.jsp" method="POST">
+                                        <button type="submit">Products</button>
+                                        <input type="hidden" name="modelID" value="<x:out select="$macbookModelDocument/modelID"/>"/>
+                                    </form>
                                 </td>
                                 <td>
                                     <form action="updateMacbookModel.jsp" method="POST">

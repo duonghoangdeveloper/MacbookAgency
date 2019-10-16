@@ -14,16 +14,22 @@
         <title>Login Page</title>
     </head>
     <body>
-        <form action="MainServlet" method="POST">
-            Username:<br/>
-            <input type="text" name="txtUsername" value="${param.txtUsername}"/><br/>
-            Password:<br/>
-            <input type="password" name="txtPassword" value="${param.txtPassword}"/><br/>
-            <input type="submit" name="action" value="Login"/>
-            <input type="reset"/>
-            <span style="color: red;">${requestScope.LOGIN_FAILED_MESSAGE}</span>
-        </form>
-        
-        
+        <%@include file="component/homeTopbar.jsp" %>
+        <%@include file="component/homeNavbar.jsp" %>
+        <main class="home-body">
+            <div class="home-header">
+                <form action="MainServlet" method="POST">
+                    Username:<br/>
+                    <input type="text" name="txtUsername" value="${param.txtUsername}"/><br/>
+                    Password:<br/>
+                    <input type="password" name="txtPassword" value="${param.txtPassword}"/><br/>
+                    <input type="submit" name="action" value="Login" style="margin-right: 7px;"/>
+                    <input type="reset"/>
+                    <span style="color: red;">${requestScope.LOGIN_FAILED_MESSAGE}</span>
+                </form>
+            </div>
+
+        </main>
+
     </body>
 </html>

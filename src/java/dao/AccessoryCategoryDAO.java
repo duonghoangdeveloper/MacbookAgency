@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import utils.DBUtilities;
 
 /**
@@ -70,6 +71,30 @@ public class AccessoryCategoryDAO implements Serializable {
 
                 AccessoryCategoryDTO dto = new AccessoryCategoryDTO(category, thumbnail, accessoryCategoryKeywordList);
                 result.getAccessoryCategory().add(dto);
+            }
+        } finally {
+            closeConnection();
+        }
+
+        return result;
+    }
+    
+    public ArrayList<AccessoryCategoryDTO> getCategoryList() throws SQLException, ClassNotFoundException {
+        ArrayList<AccessoryCategoryDTO> result = null;
+
+        try {
+            conn = DBUtilities.createConnection();
+            String sql = "SELECT category, thumbnail FROM AccessoryCategory";
+            preStm = conn.prepareStatement(sql);
+            rs = preStm.executeQuery();
+
+            result = new ArrayList<AccessoryCategoryDTO>();
+            while (rs.next()) {
+                String category = rs.getString("category");
+                String thumbnail = rs.getString("thumbnail");
+
+                AccessoryCategoryDTO dto = new AccessoryCategoryDTO(category, thumbnail, null);
+                result.add(dto);
             }
         } finally {
             closeConnection();

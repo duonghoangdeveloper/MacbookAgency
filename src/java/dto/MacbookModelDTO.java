@@ -26,7 +26,8 @@ import javax.xml.bind.annotation.XmlType;
     "screenSize",
     "touchbar",
     "thumbnail",
-    "macbookModelKeywordList"
+    "macbookModelKeywordList",
+    "macbookList"
 })
 @XmlRootElement(name = "macbookModel")
 public class MacbookModelDTO implements Serializable {
@@ -44,13 +45,15 @@ public class MacbookModelDTO implements Serializable {
     private boolean touchbar;
     @XmlElement(required = true)
     private String thumbnail;
-    @XmlElement(name = "macbookModelKeywordList", required = true)
+    @XmlElement(name = "macbookModelKeywordList", nillable = true)
     private MacbookModelKeywordListDTO macbookModelKeywordList;
+    @XmlElement(name = "macbookList", nillable = true)
+    private MacbookListDTO macbookList;
 
     public MacbookModelDTO() {
     }
 
-    public MacbookModelDTO(String modelID, String type, int year, int ssd, float screenSize, boolean touchbar, String thumbnail, MacbookModelKeywordListDTO macbookModelKeywordList) {
+    public MacbookModelDTO(String modelID, String type, int year, int ssd, float screenSize, boolean touchbar, String thumbnail, MacbookModelKeywordListDTO macbookModelKeywordList, MacbookListDTO macbookList) {
         this.modelID = modelID;
         this.type = type;
         this.year = year;
@@ -59,6 +62,7 @@ public class MacbookModelDTO implements Serializable {
         this.touchbar = touchbar;
         this.thumbnail = thumbnail;
         this.macbookModelKeywordList = macbookModelKeywordList;
+        this.macbookList = macbookList;
     }
 
     public String getModelID() {
@@ -93,6 +97,10 @@ public class MacbookModelDTO implements Serializable {
         return macbookModelKeywordList;
     }
 
+    public MacbookListDTO getMacbookList() {
+        return macbookList;
+    }
+
     public void setModelID(String modelID) {
         this.modelID = modelID;
     }
@@ -124,4 +132,10 @@ public class MacbookModelDTO implements Serializable {
     public void setMacbookModelKeywordList(MacbookModelKeywordListDTO macbookModelKeywordList) {
         this.macbookModelKeywordList = macbookModelKeywordList;
     }
+
+    public void setMacbookList(MacbookListDTO macbookList) {
+        this.macbookList = macbookList;
+    }
+
+    
 }

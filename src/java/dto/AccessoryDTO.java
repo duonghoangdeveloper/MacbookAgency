@@ -24,33 +24,37 @@ import javax.xml.bind.annotation.XmlType;
     "title",
     "price",
     "image",
-    "url"
+    "url",
+    "clickCount"
 })
 @XmlRootElement(name = "accessory")
 public class AccessoryDTO implements Serializable {
     @XmlElement(required = true)
-    protected String domain;
+    private String domain;
     @XmlElement(nillable = true)
-    protected String category;
+    private String category;
     @XmlElement(required = true)
-    protected String title;
+    private String title;
     @XmlElement(required = true)
-    protected int price;
+    private int price;
     @XmlElement(required = true)
-    protected String image;
+    private String image;
     @XmlElement(required = true)
-    protected String url;
+    private String url;
+    @XmlElement(required = true)
+    private int clickCount;
 
     public AccessoryDTO() {
     }
 
-    public AccessoryDTO(String domain, String category, String title, int price, String image, String url) {
+    public AccessoryDTO(String domain, String category, String title, int price, String image, String url, int clickCount) {
         this.domain = domain;
         this.category = category;
         this.title = title;
         this.price = price;
         this.image = image;
         this.url = url;
+        this.clickCount = clickCount;
     }
 
     public String getDomain() {
@@ -77,6 +81,10 @@ public class AccessoryDTO implements Serializable {
         return url;
     }
 
+    public int getClickCount() {
+        return clickCount;
+    }
+
     public void setDomain(String domain) {
         this.domain = domain;
     }
@@ -100,4 +108,10 @@ public class AccessoryDTO implements Serializable {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    public void setClickCount(int clickCount) {
+        this.clickCount = clickCount;
+    }
+
+    
 }

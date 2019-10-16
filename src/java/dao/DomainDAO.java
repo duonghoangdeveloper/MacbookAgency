@@ -160,7 +160,7 @@ public class DomainDAO implements Serializable {
                     newName = name;
                 }
                 
-                if (xslPath != null && !xslPath.isEmpty()) {
+                if (xslPath != null) {
                     newXslPath = xslPath;
                 }
                 
